@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="thymeleaf-3.0.15.RELEASE.jar">
+<script src="/webjars/jquery/3.3.1/jquery.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p id="board_id" th:text = "${board.id}"></p>
+    <p id="member_id" th:text = "${board.member.id}"></p>
+    <p th:text = "|제목 : ${board.title}|"></p>
+    <p th:text = "|작성자 : ${board.member.name}|"></p>
+    <p th:text = "|작성일 : ${board.date}|"></p>
+    <p th:text = "|내용 : ${board.comment}|"></p>
+
+
+    <p th:text = "|추천 수 : ${board.good}|"></p>
+    <button id="board_good_butt">추천</button>
+    <button id="board_list_butt">뒤로</button>
+    <button id="board_delete_butt">삭제</button>
+
+</body>
+
+<script>
+    $("#board_good_butt").click((e)=>{
+        e.preventDefault()
+
+        boardId = $("#board_id").text()
+
+        $.ajax({
+            type:"PATCH",
+            url:"/api/board/good/"+boardId ,
+            success:(res) =>{
+                location.replace("/boards")
+            },
+            error:(err)=>{
+                console.log(err)
+            }
+        })
+
+
+
+    })
+
+
+    $("#board_delete_butt").click((e)=>{
+        e.preventDefault()
+
+        var data = {
+            boardId : $("#board_id").text(),
+        }
+
+        console.log(data)
+
+
+        if( getCookie("id") == $("#member_id").text() ){
+
+
+            $.ajax({
+                type:"DELETE",
+                url:"/api/board",
+                data: data,
+                success:(res) =>{
+                    location.replace("/boards")
+                },
+                error:(err)=>{
+                    console.log(err)
+                }
+            })
+        }else{
+            alert("작성자가 아님!")
+        }
+    })
+
+    $("#board_list_butt").click((e)=>{
+        e.preventDefault()
+        location.replace("/boards")
+    })
+
+    function getCookie(key){
+        key = new RegExp(key + '=([^;]*)'); // 쿠키들을 세미콘론으로 구분하는 정규표현식 정의
+        return key.test(document.cookie) ? unescape(RegExp.$1) : ''; // 인자로 받은 키에 해당하는 키가 있으면 값을 반환
+    }
+
+</script>
+</html>

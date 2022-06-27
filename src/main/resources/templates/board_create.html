@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="thymeleaf-3.0.15.RELEASE.jar">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="webjars/jquery/3.3.1/jquery.js"></script>
+</head>
+
+<body>
+
+<form>
+    <input placeholder="제목" type="text" id="board_title_input">
+    <br>
+    <textarea placeholder="내용" id="board_comment_input"></textarea>
+    <br>
+    <button id="board_submit_butt">작성</button>
+    <button id="board_cancel_butt">취소</button>
+</form>
+
+</body>
+
+<script>
+    $("#board_submit_butt").click((e)=>{
+        e.preventDefault()
+
+        var data = {
+            title : $("#board_title_input").val(),
+            comment : $("#board_comment_input").val(),
+            member : {
+                id : getCookie("id")
+            }
+        }
+
+        console.log(data)
+
+         $.ajax({
+             type:"POST",
+             url:"/api/board",
+             data:JSON.stringify(data),
+             contentType : "application/json",
+             success:(res) => {
+                 location.replace("/boards")
+             },
+             error:(err)=>{
+                 console.log(err)
+             }
+
+         })
+    })
+
+    function getCookie(key){
+        key = new RegExp(key + '=([^;]*)'); // 쿠키들을 세미콘론으로 구분하는 정규표현식 정의
+        return key.test(document.cookie) ? unescape(RegExp.$1) : ''; // 인자로 받은 키에 해당하는 키가 있으면 값을 반환
+    }
+
+    $("#board_cancel_butt").click((e)=>{
+        e.preventDefault()
+        location.replace("/boards")
+    })
+
+</script>
+</html>
